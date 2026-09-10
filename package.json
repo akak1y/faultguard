@@ -1,0 +1,22 @@
+{
+  "name": "faultguard",
+  "version": "0.0.2",
+  "description": "Fault-tolerant async primitives for JavaScript: retry, timeout, circuit breaker, concurrency pool. (In development)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"placeholder\""
+  },
+  "keywords": [
+    "retry", "timeout", "circuit-breaker", "backoff", "resilience", "fault-tolerance", "async"
+  ],
+  "author": "AKAKIY <gamer.all.games@list.ru>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akak1y/faultguard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/akak1y/faultguard/issues"
+  },
+  "homepage": "https://github.com/akak1y/faultguard#readme"
+}
