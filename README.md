@@ -1,4 +1,4 @@
-[EN](README.md) | [RU](docs/i18n/README_RU.md) | [ZH](docs/i18n/README_ZH-CN.md) | [ES](docs/i18n/README_ES.md) | [JA](docs/i18n/README_JA.md) | [PT-BR](docs/i18n/README_PT-BR.md) | [FR](docs/i18n/README_FR.md)
+EN | [RU](docs/i18n/README_RU.md) | [ZH](docs/i18n/README_ZH-CN.md) | [ES](docs/i18n/README_ES.md) | [JA](docs/i18n/README_JA.md) | [PT-BR](docs/i18n/README_PT-BR.md) | [FR](docs/i18n/README_FR.md)
 
 # 🛡️ faultguard
 
@@ -6,7 +6,6 @@
 [![npm downloads](https://img.shields.io/npm/dm/faultguard.svg)](https://www.npmjs.com/package/faultguard)
 [![CI](https://github.com/akak1y/faultguard/actions/workflows/ci.yml/badge.svg)](https://github.com/akak1y/faultguard/actions/workflows/ci.yml)
 [![bundle size](https://img.shields.io/badge/bundle%20size-2.1%20kB%20gzip-06d6a0)](https://www.npmjs.com/package/faultguard)
-[![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/faultguard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > Fault-tolerant async primitives for JavaScript & TypeScript.
