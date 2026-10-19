@@ -1,20 +1,48 @@
-# faultguard
+[EN](README.md) | [RU](docs/i18n/README_RU.md) | [ZH](docs/i18n/README_ZH-CN.md) | [ES](docs/i18n/README_ES.md) | [JA](docs/i18n/README_JA.md) | [PT-BR](docs/i18n/README_PT-BR.md) | [FR](docs/i18n/README_FR.md)
 
-Fault-tolerant async primitives for JavaScript. Retry, timeout, circuit breaker, concurrency pool, semaphore — all in one tiny, zero-dependency package.
+# 🛡️ faultguard
 
-- **Zero dependencies** — nothing to audit, nothing to break
-- **< 5 KB** — tree-shakeable, ESM + CJS
-- **TypeScript-first** — full generics, strict types
-- **Runtime-agnostic** — Node ≥ 18, Deno, Bun, browsers, edge runtimes
-- **AbortController-native** — cancel anything, anytime
+[![npm](https://img.shields.io/npm/v/faultguard.svg)](https://www.npmjs.com/package/faultguard)
+[![npm downloads](https://img.shields.io/npm/dm/faultguard.svg)](https://www.npmjs.com/package/faultguard)
+[![CI](https://github.com/akak1y/faultguard/actions/workflows/ci.yml/badge.svg)](https://github.com/akak1y/faultguard/actions/workflows/ci.yml)
+[![bundle size](https://img.shields.io/badge/bundle%20size-2.1%20kB%20gzip-06d6a0)](https://www.npmjs.com/package/faultguard)
+[![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](https://www.npmjs.com/package/faultguard)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Install
+> Fault-tolerant async primitives for JavaScript & TypeScript.
+
+Built for anything that talks to the outside world: API clients, workers,
+queue consumers, database access. Every service retries, times out and
+rate-limits — and every developer rewrites those loops by hand, with subtle
+bugs. `faultguard` gives you battle-tested, composable blocks that just work.
+Born from production pain.
+
+## ✨ Features
+
+- 🔁 `retry` with exponential / linear / fixed backoff, jitter, `retryIf` and abort
+- ⏱️ `timeout` that actually cancels the work via `AbortController`
+- 🔌 `circuitBreaker` (closed → open → half-open) to stop hammering dead services
+- 🧵 `pool` with bounded concurrency and order-preserving results
+- 🚦 `semaphore` for manual, fixed-size resource limits
+- 🧩 AbortController-native across every primitive
+- ⚡ Zero runtime dependencies, < 5 KB, tree-shakeable
+- 🟦 Full TypeScript types, ESM + CJS out of the box
+- 🌐 Node ≥ 18, Deno, Bun, browsers and edge runtimes
+
+## 📦 Install
 
 ```bash
 npm install faultguard
 ```
 
-## Quick start
+Works as ESM or CJS:
+
+```ts
+import { retry, timeout } from 'faultguard'; // ESM
+const { retry } = require('faultguard'); // CJS
+```
+
+## 🚀 Quick start
 
 ```ts
 import { retry } from 'faultguard';
@@ -29,105 +57,36 @@ const data = await retry(
         retries: 5,
         delay: 500,
         backoff: 'exponential',
+        jitter: true,
         retryIf: (err) => (err as Error).message !== 'HTTP 404',
         onRetry: (err, n) => console.warn(`Retry #${n}:`, (err as Error).message),
     },
 );
 ```
 
-## API
+## 📚 Docs
 
-### `retry(fn, options?)`
+- [Getting Started](docs/getting-started.md)
+- [API Reference](docs/api-reference.md)
+- [Patterns & Recipes](docs/patterns.md)
 
-Retries a function with configurable backoff and abort support. `fn` receives `{ attempt, signal }`.
-
-| Option     | Type                                   | Default         | Description                            |
-| ---------- | -------------------------------------- | --------------- | -------------------------------------- |
-| `retries`  | `number`                               | `3`             | Retries after the first attempt        |
-| `delay`    | `number`                               | `1000`          | Base delay in ms                       |
-| `backoff`  | `'fixed' \| 'linear' \| 'exponential'` | `'exponential'` | Delay strategy                         |
-| `maxDelay` | `number`                               | `Infinity`      | Delay cap in ms                        |
-| `factor`   | `number`                               | `2`             | Exponential multiplier                 |
-| `jitter`   | `boolean`                              | `true`          | Randomize delay (anti thundering-herd) |
-| `retryIf`  | `(err) => boolean`                     | always retry    | Stop retrying when it returns false    |
-| `onRetry`  | `(err, n) => void`                     | —               | Called before each retry               |
-| `signal`   | `AbortSignal`                          | —               | Cancel pending retries                 |
-
-### `timeout(operation, ms, options?)`
-
-Wraps a promise or a `(signal) => promise` factory with a deadline. On timeout the internal `AbortController` fires, so cancellable work (like `fetch`) is actually cancelled.
-
-```ts
-import { timeout } from 'faultguard';
-
-const result = await timeout((signal) => fetch(url, { signal }).then((r) => r.json()), 5000, {
-    message: 'API too slow',
-});
-```
-
-Rejects with `TimeoutError`. Pass `options.signal` to also honor an external abort.
-
-### `pool(items, fn, options?)`
-
-Runs `fn` over `items` with bounded concurrency, preserving result order.
-
-```ts
-import { pool } from 'faultguard';
-
-const results = await pool(urls, (url) => fetch(url).then((r) => r.json()), {
-    concurrency: 10,
-});
-```
-
-### `semaphore(limit)`
-
-Manual acquire/release for a fixed number of permits.
-
-```ts
-import { semaphore } from 'faultguard';
-
-const sem = semaphore(5);
-await sem.acquire();
-try {
-    await db.query('SELECT 1');
-} finally {
-    sem.release();
-}
-```
-
-Exposes `available` and `pending`. `acquire(signal?)` is cancellable.
-
-### `circuitBreaker(fn, options?)`
-
-Stops hammering a failing service. States: `closed → open → half-open → closed`.
-
-```ts
-import { circuitBreaker } from 'faultguard';
-
-const breaker = circuitBreaker(callExternalApi, {
-    failureThreshold: 5,
-    resetTimeout: 30_000,
-    halfOpenRequests: 2,
-    onStateChange: (state) => console.log('breaker:', state),
-});
-
-const data = await breaker(payload); // throws CircuitOpenError while open
-```
-
-### Utilities
-
-`sleep(ms, signal?)`, `computeDelay(retryNumber, config)`, `createAbortError(signal?)`, `isAbortError(error)`, classes `TimeoutError`, `CircuitOpenError`.
-
-## Development
+## 🧪 Development
 
 ```bash
 npm install
-npm run dev          # watch build
-npm run test         # tests in watch mode
-npm run check        # lint + format:check + typecheck + test:run
-npm run build        # production build
+npm run dev      # watch build
+npm run test     # vitest watch mode
+npm run check    # lint + format + typecheck + test
+npm run build    # production build (ESM + CJS + dts)
 ```
 
-## License
+## 🛣️ Roadmap
 
-[MIT](./LICENSE)
+- `compose()` to stack primitives into a single reusable wrapper
+- Decorrelated jitter and custom backoff strategies
+- `fallback` / `bulkhead` / rate limiter
+- Hedged requests (race N attempts, take the first success)
+
+## 📄 License
+
+MIT © akak1y

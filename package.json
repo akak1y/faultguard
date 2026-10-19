@@ -1,6 +1,6 @@
 {
     "name": "faultguard",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Fault-tolerant async primitives for JavaScript: retry, timeout, circuit breaker, concurrency pool. Zero dependencies.",
     "type": "module",
     "main": "./dist/index.cjs",
