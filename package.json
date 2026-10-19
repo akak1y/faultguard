@@ -1,22 +1,70 @@
 {
-  "name": "faultguard",
-  "version": "0.0.2",
-  "description": "Fault-tolerant async primitives for JavaScript: retry, timeout, circuit breaker, concurrency pool. (In development)",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"placeholder\""
-  },
-  "keywords": [
-    "retry", "timeout", "circuit-breaker", "backoff", "resilience", "fault-tolerance", "async"
-  ],
-  "author": "AKAKIY <gamer.all.games@list.ru>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/akak1y/faultguard.git"
-  },
-  "bugs": {
-    "url": "https://github.com/akak1y/faultguard/issues"
-  },
-  "homepage": "https://github.com/akak1y/faultguard#readme"
+    "name": "faultguard",
+    "version": "0.1.0",
+    "description": "Fault-tolerant async primitives for JavaScript: retry, timeout, circuit breaker, concurrency pool. Zero dependencies.",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest",
+        "test:run": "vitest run",
+        "test:coverage": "vitest run --coverage",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "check": "npm run lint && npm run format:check && npm run typecheck && npm run test:run",
+        "prepublishOnly": "npm run check && npm run build"
+    },
+    "keywords": [
+        "retry",
+        "timeout",
+        "circuit-breaker",
+        "backoff",
+        "resilience",
+        "fault-tolerance",
+        "async",
+        "concurrency",
+        "abort",
+        "zero-dependencies"
+    ],
+    "author": "akak1y <ТВОЯ@ПОЧТА.com>",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/akak1y/faultguard.git"
+    },
+    "bugs": {
+        "url": "https://github.com/akak1y/faultguard/issues"
+    },
+    "homepage": "https://github.com/akak1y/faultguard#readme",
+    "devDependencies": {
+        "@eslint/js": "^9.0.0",
+        "@vitest/coverage-v8": "^2.0.0",
+        "eslint": "^9.0.0",
+        "eslint-config-prettier": "^9.0.0",
+        "prettier": "^3.3.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.5.0",
+        "typescript-eslint": "^8.0.0",
+        "vitest": "^2.0.0"
+    }
 }

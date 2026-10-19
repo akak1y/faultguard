@@ -1,0 +1,40 @@
+name: Release
+
+on:
+    push:
+        tags: ['v*']
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        environment: npm
+        permissions:
+            contents: read
+            id-token: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Upgrade npm for trusted publishing
+              run: npm install -g npm@11
+
+            - run: npm ci
+            - run: npm run check
+            - run: npm run test:run
+            - run: npm publish
+
+    github-release:
+        needs: publish
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+        steps:
+            - uses: actions/checkout@v4
+            - name: Create GitHub Release
+              run: gh release create "$GITHUB_REF_NAME" --generate-notes --title "$GITHUB_REF_NAME"
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
